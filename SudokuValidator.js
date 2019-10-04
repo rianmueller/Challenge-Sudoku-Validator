@@ -17,39 +17,15 @@ function SudokuValidator(sudoku) {
 SudokuValidator.prototype.validate = function(num) {
   // Do work here
 
-  // for a given num, the puzzle will have an array of (num) arrays, each of which will contain (num) elements
-  // must verify that each array has exactly 1 integer from 1-num
-
-  console.log("GRID TO VALIDATE");
-  console.log(this.sudoku);
-
-  // return [
-  //   [5,3,4, 6,7,8, 9,1,2],
-  //   [6,7,2, 1,9,5, 3,4,8],
-  //   [1,9,8, 3,4,2, 5,6,7],
-
-  //   [8,5,9, 7,6,1, 4,2,3],
-  //   [4,2,6, 8,5,3, 7,9,1],
-  //   [7,1,3, 9,2,4, 8,5,6],
-
-  //   [9,6,1, 5,3,7, 2,8,4],
-  //   [2,8,7, 4,1,9, 6,3,5],
-  //   [3,4,5, 2,8,6, 1,7,9]
-  // ];
-
+  // create an array to compare rows, columns, sub-grids against
   const validator = [];
-  for (let x = 1; x < num + 1; x++) {
-    validator.push(x);
+  for (let x = 0; x < num; x++) {
+    validator.push(x + 1);
   }
-  console.log("VALIDATOR ARRAY");
-  console.log(validator);
-  // validator = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]
 
   // check horizontal
   for (let i = 0; i < num; i++) {
     let array = this.sudoku[i];
-    console.log("ROW " + i + " TO VALIDATE");
-    console.log(array);
 
     for (let x = 0; x < num; x++) {
       if (array.indexOf(validator[x]) === -1) {
@@ -64,8 +40,6 @@ SudokuValidator.prototype.validate = function(num) {
     for (let j = 0; j < num; j++) {
       array.push(this.sudoku[j][i]);
     }
-    console.log("COLUMN " + i + " TO VALIDATE");
-    console.log(array);
 
     for (let x = 0; x < num; x++) {
       if (array.indexOf(validator[x]) === -1) {
@@ -74,9 +48,72 @@ SudokuValidator.prototype.validate = function(num) {
     }
   }
 
-  // must verify that, across arrays, each array position (e.g. the collection of all values of array[0]) has exactly 1 integer from 1-num
-  // must verify that each sudoku square (subsections of several arrays) has exactly 1 integer from 1-num
-  // - must first identify those subsections for a given value of (num)
-  // return boolean true or false
+  // check sub-grids
+
+  // num = 9
+
+  // i = sub-grid index
+  // j = row value
+  // k = column value
+
+  // grid 0
+  // result = [[0][0], [0][1], [0][2], [1][0], [1][1], [1][2], [2][0], [2][1], [2][2]]
+  // j = 0-2, k = 0-2
+
+  // grid 1
+  // result = [[0][3], [0][4], [0][5], [1][3], [1][4], [1][5], [2][3], [2][4], [2][5]]
+  // j = 0-2, k = 3-5
+
+  // grid 2
+  // result = [[0][6], [0][7], [0][8], [1][6], [1][7], [1][8], [2][6], [2][7], [2][8]]
+  // j = 0-2, k = 6-8
+
+  // grid 3
+  // result = [[3][0], [3][1], [3][2], [4][0], [4][1], [4][2], [5][0], [5][1], [5][2]]
+  // j = 3-5, k = 0-2
+
+  // grid 4
+  // result = [[3][3], [3][4], [3][5], [4][3], [4][4], [4][5], [5][3], [5][4], [5][5]]
+  // j = 3-5, k = 3-5
+
+  // grid 5
+  // result = [[3][6], [3][7], [3][8], [4][6], [4][7], [4][8], [5][6], [5][7], [5][8]]
+  // j = 3-5, k = 6-8
+
+  // grid 6
+  // result = [[6][0], [6][1], [6][2], [7][0], [7][1], [7][2], [8][0], [8][1], [8][2]]
+  // j = 6-8, k = 0-2
+
+  // grid 7
+  // result = [[6][3], [6][4], [6][5], [7][3], [7][4], [7][5], [8][3], [8][4], [8][5]]
+  // j = 6-8, k = 3-5
+
+  // grid 8
+  // result = [[6][6], [6][7], [6][8], [7][6], [7][7], [7][8], [8][6], [8][7], [8][8]]
+  // j = 6-8, k = 6-8
+
+  // if "i = j + k", push the [j][k] value
+
+  for (let grid = 0; grid < num; grid++) {
+    let array = [];
+    for (let row = 0; row < num; row++) {
+      for (let col = 0; col < num; col++) {
+        if (
+          Math.floor(row / Math.sqrt(num)) * Math.sqrt(num) +
+            Math.floor(col / Math.sqrt(num)) ===
+          grid
+        ) {
+          array.push(this.sudoku[row][col]);
+        }
+      }
+    }
+
+    for (let x = 0; x < num; x++) {
+      if (array.indexOf(validator[x]) === -1) {
+        return false;
+      }
+    }
+  }
+
   return true;
 };
